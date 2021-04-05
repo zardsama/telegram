@@ -15,6 +15,6 @@
     },
     "minimum-stability": "stable",
     "require": {
-        "zardsama/http": ">=1.0"		
+        "zardsama/http": ">=0.1"		
 	}
 }
