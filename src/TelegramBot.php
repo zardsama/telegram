@@ -37,6 +37,15 @@
 			return $this->api('sendMessage', 'chat_id='.$to.'&text='.rawurlencode($text));
 		}
 
+        public function getFile($file_id)
+        {
+            $file = $this->api('getFile', 'file_id='.$file_id);
+            $file = json_decode($file);
+            if ($file->ok == true) {
+                return 'https://api.telegram.org/file/bot'.$this->token.'/'.$file->result->file_path;
+            }
+        }
+
 		public function api($api, $param = null) {
 			$url = TelegramBot::API_URL.'/bot'.$this->token.'/'.$api.'?'.$param;
 			$this->curl = new CurlConnection($url, 'GET');
