@@ -33,18 +33,14 @@
 			return $ret;
 		}
 
-		public function messagePush($to, $text) {
-			return $this->api('sendMessage', 'chat_id='.$to.'&text='.rawurlencode($text));
-		}
+		public function messagePush($to, $text, $option = null) {
+            $add_param = '';
+            if (is_array($option) == true) {
+                $add_param .= '&'.http_build_query($option);
 
-        public function getFile($file_id)
-        {
-            $file = $this->api('getFile', 'file_id='.$file_id);
-            $file = json_decode($file);
-            if ($file->ok == true) {
-                return 'https://api.telegram.org/file/bot'.$this->token.'/'.$file->result->file_path;
             }
-        }
+			return $this->api('sendMessage', 'chat_id='.$to.'&text='.rawurlencode($text).$add_param);
+		}
 
 		public function api($api, $param = null) {
 			$url = TelegramBot::API_URL.'/bot'.$this->token.'/'.$api.'?'.$param;
