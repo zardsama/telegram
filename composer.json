@@ -1,0 +1,21 @@
+{
+    "name": "zardsama/telegram",
+    "description": "telegram library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Zardsama",
+            "email": "zardsama@naver.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "zardsama\\telegram\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.2",
+        "symfony/http-client": "^7.0"
+    }
+}
