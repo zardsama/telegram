@@ -60,10 +60,10 @@ Class TelegramBot {
      * push message
      * @param string $to
      * @param string $text
-     * @param array|null $option
+     * @param array $option
      * @return string
      */
-    public function messagePush(string $to, string $text, ?array $option) : string
+    public function messagePush(string $to, string $text, array $option = []) : string
     {
         $add_param = '';
         if (is_array($option)) {
