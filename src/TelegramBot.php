@@ -61,40 +61,55 @@ Class TelegramBot {
      * @param string $to
      * @param string $text
      * @param array $option
+     * @param ?string $parse_mode
      * @return string
      */
-    public function messagePush(string $to, string $text, array $option = []) : string
+    public function messagePush(string $to, string $text, array $option = [], ?string $parse_mode = '') : string
     {
-        $add_param = '';
-        if (is_array($option)) {
-            $add_param .= '&'.http_build_query($option);
-
+        $param = [
+            'chat_id' => $to,
+            'text' => $text,
+        ];
+        if ($parse_mode) {
+            $param['parse_mode'] = $parse_mode;
         }
-        return $this->api('sendMessage', 'chat_id='.$to.'&text='.rawurlencode($text).$add_param);
+        if (is_array($option) && count($option)) {
+            foreach ($option as $key => $value) {
+                $param[$key] = $value;
+            }
+        }
+        return $this->api('sendMessage', $param);
     }
 
     /**
      * send Telegram API
      * @param string $api
-     * @param string $param
+     * @param string|array $param
      * @return string
      */
-    public function api(string $api, string $param = '') : string
+    public function api(string $api, string|array $param = '') : string
     {
-        $url = self::API_URL.'/bot'.$this->token.'/'.$api.'?'.$param;
+        $url = self::API_URL.'/bot'.$this->token.'/'.$api;
+        if (is_array($param)) {
+            $method = 'POST';
+        } else {
+            $method = 'GET';
+            $url .= '?' . $param;
+        }
 
         try {
             $client = new CurlHttpClient();
             $response = $client->request(
-                'GET',
+                $method,
                 $url,
                 [
                     'verify_peer' => false,
                     'verify_host' => false,
                     'timeout' => 10,
                     'headers' => [
-                        'Content-Type:application/json'
-                    ]
+                        'Content-Type: application/json'
+                    ],
+                    'json' => $param
                 ]
             );
             return $response->getContent();
