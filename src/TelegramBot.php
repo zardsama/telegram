@@ -2,6 +2,7 @@
 
 namespace zardsama\telegram;
 
+use InvalidArgumentException;
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -79,6 +80,34 @@ Class TelegramBot {
             }
         }
         return $this->api('sendMessage', $param);
+    }
+
+    /**
+     * push media group
+     * @param string $to
+     * @param array $media
+     * @return string
+     */
+    public function mediaGroupPush(string $to, array $media) : string
+    {
+        if (!is_array($media)) {
+            throw new InvalidArgumentException('media must be an array');
+        }
+
+        $_media = [];
+        foreach ($media as $url) {
+            $_media[] = [
+                'type' => 'photo',
+                'media' => $url
+            ];
+        }
+
+        $param = [
+            'chat_id' => $to,
+            'media' => array_slice($_media, 0, 10)
+        ];
+
+        return $this->api('sendMediaGroup', $param);
     }
 
     /**
