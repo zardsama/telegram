@@ -1,8 +1,13 @@
 <?PHP
 
+/**
+ * Telegram API
+ * @noinspection PhpUnused
+ */
+
 namespace zardsama\telegram;
 
-use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -90,10 +95,6 @@ Class TelegramBot {
      */
     public function mediaGroupPush(string $to, array $media) : string
     {
-        if (!is_array($media)) {
-            throw new InvalidArgumentException('media must be an array');
-        }
-
         $_media = [];
         foreach ($media as $url) {
             $_media[] = [
@@ -115,6 +116,7 @@ Class TelegramBot {
      * @param string $api
      * @param string|array $param
      * @return string
+     * @throws RuntimeException
      */
     public function api(string $api, string|array $param = '') : string
     {
@@ -141,14 +143,21 @@ Class TelegramBot {
                     'json' => $param
                 ]
             );
-            return $response->getContent();
+
+            $content = $response->getContent(false);
+            if ($response->getStatusCode() == '200') {
+                return $content;
+            } else {
+                $content = json_decode($content);
+                throw new RuntimeException($content->description);
+            }
         } catch (
-            ClientExceptionInterface|
-            ServerExceptionInterface|
-            RedirectionExceptionInterface|
+            ClientExceptionInterface |
+            ServerExceptionInterface |
+            RedirectionExceptionInterface |
             TransportExceptionInterface $e
         ) {
-            return $e->getMessage();
+            throw new RuntimeException($e->getMessage());
         }
     }
 
